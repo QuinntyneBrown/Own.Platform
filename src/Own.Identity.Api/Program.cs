@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-using System.Reflection;
+using Own.Platform.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,46 +10,14 @@ builder.Services.AddDbContext<IdentityDbContext>(optionsBuilder => optionsBuilde
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Version = "v1",
-        Title = "",
-        Description = "",
-        TermsOfService = new Uri("https://example.com/terms"),
-        Contact = new OpenApiContact
-        {
-            Name = "",
-            Email = ""
-        },
-        License = new OpenApiLicense
-        {
-            Name = "Use under MIT",
-            Url = new Uri("https://opensource.org/licenses/MIT"),
-        }
-    });
-
-    options.EnableAnnotations();
-
-    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
-
-}).AddSwaggerGenNewtonsoftSupport();
+builder.Services.AddSwagger(typeof(Program), "Identity Api", "Identity Management");
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger(options => options.SerializeAsV2 = true);
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "");
-        options.RoutePrefix = string.Empty;
-        options.DisplayOperationId();
-    });
+    app.UseSwagger();
 
     using (var scope = app.Services.CreateScope())
     {
@@ -120,9 +87,19 @@ app.Run();
 
 public class User
 {
+    public User()
+    {
+
+    }
+
+    public User(string username, string password)
+    {
+
+    }
+
     public Guid UserId { get; set; }
-    public string Name { get; set; }
-    public string Password { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
     public byte[] Salt { get; set; }
 }
 
